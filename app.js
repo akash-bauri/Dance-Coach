@@ -3,11 +3,11 @@ import {
     getAuth, 
     signInWithPopup, 
     GoogleAuthProvider, 
-    signInWithEmailAndPassword, 
+    signInWithEmailAndPassword,
     createUserWithEmailAndPassword 
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-// NEW FIREBASE CONFIG
+// Vetted Config for dance-coach-a8bc4
 const firebaseConfig = {
   apiKey: "AIzaSyDXk9MbcJe2PwcS1ouaUFVEqvjpyXN1Lxc",
   authDomain: "dance-coach-a8bc4.firebaseapp.com",
@@ -21,70 +21,42 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-const loginScreen = document.getElementById('login-screen');
-const appScreen = document.getElementById('app-screen');
-const userTag = document.getElementById('user-tag');
-
-function handleLogin(userName) {
-    loginScreen.classList.add('hidden');
-    appScreen.classList.remove('hidden');
-    userTag.innerText = `👤 ${userName.toUpperCase()}`;
-    initPoseDetection();
-}
-
-// Button Listeners
-document.getElementById('google-btn').onclick = async () => {
-    const provider = new GoogleAuthProvider();
-    try {
-        const res = await signInWithPopup(auth, provider);
-        handleLogin(res.user.displayName);
-    } catch (err) { alert(err.message); }
-};
-
-document.getElementById('email-btn').onclick = async () => {
-    const email = document.getElementById('email-input').value;
-    const pass = document.getElementById('pass-input').value;
-    if(!email || !pass) return alert("Enter credentials");
-
-    try {
-        const res = await signInWithEmailAndPassword(auth, email, pass);
-        handleLogin(res.user.email.split('@')[0]);
-    } catch (err) {
-        if(err.code === 'auth/user-not-found') {
-            const reg = await createUserWithEmailAndPassword(auth, email, pass);
-            handleLogin(reg.user.email.split('@')[0]);
-        } else { alert(err.message); }
-    }
-};
-
-// AI Engine
-function initPoseDetection() {
-    const video = document.getElementById('user-vid');
-    const canvas = document.getElementById('pose-canvas');
-    const ctx = canvas.getContext('2d');
-
-    const pose = new Pose({locateFile: (f) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${f}`});
-    pose.setOptions({ modelComplexity: 1, smoothLandmarks: true, minDetectionConfidence: 0.5 });
-
-    pose.onResults((res) => {
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        if (res.poseLandmarks) {
-            drawConnectors(ctx, res.poseLandmarks, POSE_CONNECTIONS, {color: '#00FF00', lineWidth: 4});
-            drawLandmarks(ctx, res.poseLandmarks, {color: '#FF0000', radius: 2});
-            document.getElementById('accuracy-txt').innerText = Math.round(res.poseLandmarks[0].visibility * 100) + "%";
+// Google Sign-In Logic
+const googleBtn = document.getElementById('google-btn');
+if (googleBtn) {
+    googleBtn.onclick = async () => {
+        const provider = new GoogleAuthProvider();
+        try {
+            const res = await signInWithPopup(auth, provider);
+            alert("Welcome " + res.user.displayName);
+            window.location.reload(); 
+        } catch (err) {
+            alert("Firebase Error: " + err.message);
         }
-    });
-
-    const camera = new Camera(video, {
-        onFrame: async () => { await pose.send({image: video}); },
-        width: 1280, height: 720
-    });
-    camera.start();
+    };
 }
 
-document.getElementById('vid-upload').onchange = (e) => {
-    const file = e.target.files[0];
-    if(file) document.getElementById('teacher-vid').src = URL.createObjectURL(file);
-};
+// Email Sign-In / Sign-Up Logic
+const emailBtn = document.getElementById('email-btn');
+if (emailBtn) {
+    emailBtn.onclick = async () => {
+        const email = document.getElementById('email-input').value;
+        const pass = document.getElementById('pass-input').value;
+
+        if (!email || !pass) return alert("Fill in all fields");
+
+        try {
+            await signInWithEmailAndPassword(auth, email, pass);
+            alert("Logged in!");
+        } catch (err) {
+            if (err.code === 'auth/user-not-found') {
+                try {
+                    await createUserWithEmailAndPassword(auth, email, pass);
+                    alert("Account created and logged in!");
+                } catch (e) { alert(e.message); }
+            } else {
+                alert(err.message);
+            }
+        }
+    };
+}
