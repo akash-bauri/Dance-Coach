@@ -2,47 +2,60 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AI Dance Coach</title>
+  <title>AI Dance Coach Pro</title>
 
-  <!-- CSS -->
   <link rel="stylesheet" href="style.css" />
 
-  <!-- Chart.js -->
+  <!-- Chart -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <!-- MediaPipe -->
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
 </head>
 
 <body>
 
-  <!-- LOGIN -->
-  <div id="loginPage" class="container">
-    <h1>AI Dance Coach 🔥</h1>
-    <input type="email" id="email" placeholder="Email" />
-    <input type="password" id="password" placeholder="Password" />
-    <button id="emailLogin">Login</button>
-    <button id="googleLogin">Google Login</button>
-  </div>
+<div id="loginPage" class="container">
+  <h1>AI Dance Coach 🔥</h1>
+  <input type="email" id="email" placeholder="Email" />
+  <input type="password" id="password" placeholder="Password" />
+  <button id="emailLogin">Login</button>
+  <button id="googleLogin">Google Login</button>
+</div>
 
-  <!-- APP -->
-  <div id="appPage" class="container hidden">
-    <h2>AI Dance Coach 🎯</h2>
+<div id="appPage" class="app hidden">
 
-    <video id="video" autoplay playsinline></video>
-    <canvas id="canvas"></canvas>
-
-    <h3>Score: <span id="score">0</span></h3>
-
-    <canvas id="chart"></canvas>
-
-    <button onclick="startCamera()">Start AI</button>
+  <header>
+    <h2>AI Dance Coach</h2>
     <button onclick="logout()">Logout</button>
+  </header>
+
+  <div class="main">
+
+    <!-- LEFT PANEL -->
+    <div class="video-section">
+      <video id="video" autoplay playsinline></video>
+      <input type="file" id="uploadVideo" accept="video/*" />
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="controls">
+      <h3>Controls</h3>
+
+      <button onclick="startCamera()">Start Camera</button>
+      <button onclick="useUploadedVideo()">Use Uploaded Video</button>
+
+      <h2>Score: <span id="score">0</span></h2>
+
+      <canvas id="chart"></canvas>
+    </div>
+
   </div>
 
-  <script type="module" src="app.js"></script>
+</div>
+
+<script type="module" src="app.js"></script>
 
 </body>
 </html>
