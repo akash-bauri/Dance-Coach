@@ -1,17 +1,13 @@
 body {
   margin: 0;
-  font-family: Arial;
-  background: linear-gradient(135deg, #0f172a, #020617);
+  font-family: 'Segoe UI';
+  background: #0f172a;
   color: white;
-  text-align: center;
 }
 
 .container {
-  margin-top: 60px;
-}
-
-.hidden {
-  display: none;
+  text-align: center;
+  margin-top: 100px;
 }
 
 input {
@@ -19,8 +15,6 @@ input {
   margin: 10px auto;
   padding: 12px;
   width: 260px;
-  border-radius: 6px;
-  border: none;
 }
 
 button {
@@ -28,17 +22,40 @@ button {
   padding: 12px 20px;
   background: #22c55e;
   border: none;
-  border-radius: 6px;
   color: white;
+  border-radius: 6px;
   cursor: pointer;
 }
 
-video {
-  width: 400px;
-  border-radius: 12px;
-  margin-top: 20px;
+.app header {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  background: #020617;
 }
 
-canvas {
-  margin-top: 20px;
+.main {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+}
+
+.video-section {
+  flex: 2;
+}
+
+video {
+  width: 100%;
+  border-radius: 10px;
+}
+
+.controls {
+  flex: 1;
+  background: #020617;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.hidden {
+  display: none;
 }
