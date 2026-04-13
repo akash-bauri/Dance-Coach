@@ -1,13 +1,44 @@
-.glass {
-    background: rgba(15, 23, 42, 0.7);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+body {
+  margin: 0;
+  font-family: Arial;
+  background: linear-gradient(135deg, #0f172a, #020617);
+  color: white;
+  text-align: center;
 }
 
-#user-vid {
-    transform: scaleX(-1); /* Mirrors the user so it's natural */
+.container {
+  margin-top: 60px;
 }
 
-input::placeholder {
-    color: #475569;
+.hidden {
+  display: none;
+}
+
+input {
+  display: block;
+  margin: 10px auto;
+  padding: 12px;
+  width: 260px;
+  border-radius: 6px;
+  border: none;
+}
+
+button {
+  margin: 10px;
+  padding: 12px 20px;
+  background: #22c55e;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+}
+
+video {
+  width: 400px;
+  border-radius: 12px;
+  margin-top: 20px;
+}
+
+canvas {
+  margin-top: 20px;
 }
