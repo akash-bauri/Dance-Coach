@@ -1,57 +1,46 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
   <title>AI Dance Coach Pro</title>
+  <link rel="stylesheet" href="style.css">
 
-  <link rel="stylesheet" href="style.css" />
-
-  <!-- Chart -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <!-- MediaPipe -->
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
 </head>
 
 <body>
 
-<div id="loginPage" class="container">
+<div id="app">
+
   <h1>AI Dance Coach 🔥</h1>
-  <input type="email" id="email" placeholder="Email" />
-  <input type="password" id="password" placeholder="Password" />
-  <button id="emailLogin">Login</button>
-  <button id="googleLogin">Google Login</button>
-</div>
 
-<div id="appPage" class="app hidden">
+  <div class="videos">
 
-  <header>
-    <h2>AI Dance Coach</h2>
-    <button onclick="logout()">Logout</button>
-  </header>
-
-  <div class="main">
-
-    <!-- LEFT PANEL -->
-    <div class="video-section">
-      <video id="video" autoplay playsinline></video>
-      <input type="file" id="uploadVideo" accept="video/*" />
+    <!-- TEACHER -->
+    <div>
+      <h3>Teacher Video</h3>
+      <video id="teacherVideo" controls></video>
+      <input type="file" id="teacherUpload" accept="video/*">
     </div>
 
-    <!-- RIGHT PANEL -->
-    <div class="controls">
-      <h3>Controls</h3>
-
-      <button onclick="startCamera()">Start Camera</button>
-      <button onclick="useUploadedVideo()">Use Uploaded Video</button>
-
-      <h2>Score: <span id="score">0</span></h2>
-
-      <canvas id="chart"></canvas>
+    <!-- USER -->
+    <div>
+      <h3>Your Video</h3>
+      <video id="userVideo" autoplay playsinline></video>
+      <input type="file" id="userUpload" accept="video/*">
     </div>
 
   </div>
+
+  <div class="controls">
+    <button onclick="startComparison()">Start Comparison</button>
+  </div>
+
+  <h2>Accuracy: <span id="accuracy">0</span>%</h2>
+  <h3 id="result">Result: -</h3>
+
+  <button onclick="downloadReport()">Download Report</button>
 
 </div>
 
