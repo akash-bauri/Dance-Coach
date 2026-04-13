@@ -1,4 +1,4 @@
-// 🔥 Firebase CDN (WORKS IN BROWSER)
+// Firebase CDN
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
   getAuth,
@@ -9,68 +9,42 @@ import {
   signOut
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-
-// ✅ YOUR FIREBASE CONFIG (ADDED CORRECTLY)
+// CONFIG
 const firebaseConfig = {
   apiKey: "AIzaSyDXk9MbcJe2PwcS1ouaUFVEqvjpyXN1Lxc",
   authDomain: "dance-coach-a8bc4.firebaseapp.com",
   projectId: "dance-coach-a8bc4",
   storageBucket: "dance-coach-a8bc4.firebasestorage.app",
   messagingSenderId: "603967823913",
-  appId: "1:603967823913:web:614741c2466626ae9dfc38",
-  measurementId: "G-D43BK1KZPK"
+  appId: "1:603967823913:web:614741c2466626ae9dfc38"
 };
 
-
-// 🔥 INIT
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
-
-// 📌 UI ELEMENTS
+// UI
 const loginPage = document.getElementById("loginPage");
 const appPage = document.getElementById("appPage");
 
-const email = document.getElementById("email");
-const password = document.getElementById("password");
-
-const scoreText = document.getElementById("score");
 const video = document.getElementById("video");
+const scoreText = document.getElementById("score");
 
 
-// ✅ EMAIL LOGIN (WITH ERROR HANDLING)
+// LOGIN
 document.getElementById("emailLogin").onclick = async () => {
-  try {
-    if (!email.value || !password.value) {
-      alert("Enter email & password");
-      return;
-    }
-
-    await signInWithEmailAndPassword(auth, email.value, password.value);
-  } catch (err) {
-    alert("Login Error: " + err.message);
-  }
+  await signInWithEmailAndPassword(auth, email.value, password.value);
 };
 
-
-// ✅ GOOGLE LOGIN
 document.getElementById("googleLogin").onclick = async () => {
-  try {
-    await signInWithPopup(auth, provider);
-  } catch (err) {
-    alert("Google Login Error: " + err.message);
-  }
+  await signInWithPopup(auth, provider);
 };
 
-
-// ✅ LOGOUT
 window.logout = async () => {
   await signOut(auth);
 };
 
-
-// ✅ SESSION HANDLING (VERY IMPORTANT)
+// SESSION
 onAuthStateChanged(auth, (user) => {
   if (user) {
     loginPage.classList.add("hidden");
@@ -82,7 +56,7 @@ onAuthStateChanged(auth, (user) => {
 });
 
 
-// 📊 CHART SETUP
+// 📊 CHART
 const ctx = document.getElementById("chart").getContext("2d");
 let dataPoints = [];
 
@@ -90,66 +64,85 @@ const chart = new Chart(ctx, {
   type: "line",
   data: {
     labels: [],
-    datasets: [{
-      label: "Dance Score",
-      data: [],
-      borderWidth: 2
-    }]
+    datasets: [{ label: "Score", data: [] }]
   }
 });
 
 
-// 🤖 MEDIAPIPE POSE SETUP
+// 🤖 FIXED POSE (IMPORTANT FIX)
 let pose;
 
+function initPose() {
+  pose = new Pose({
+    locateFile: (file) =>
+      `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`
+  });
+
+  pose.onResults(onResults);
+}
+
+
+// 🎥 CAMERA
 window.startCamera = async () => {
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-    video.srcObject = stream;
+  initPose();
 
-    pose = new Pose.Pose({
-      locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`
-    });
+  const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+  video.srcObject = stream;
 
-    pose.onResults(onResults);
+  const camera = new Camera(video, {
+    onFrame: async () => {
+      await pose.send({ image: video });
+    },
+    width: 640,
+    height: 480
+  });
 
-    const camera = new Camera(video, {
-      onFrame: async () => {
-        await pose.send({ image: video });
-      },
-      width: 640,
-      height: 480
-    });
-
-    camera.start();
-
-  } catch (err) {
-    alert("Camera Error: " + err.message);
-  }
+  camera.start();
 };
 
 
-// 🧠 AI SCORE LOGIC
+// 🎥 VIDEO UPLOAD
+window.useUploadedVideo = () => {
+  initPose();
+
+  const file = document.getElementById("uploadVideo").files[0];
+  if (!file) {
+    alert("Upload a video first!");
+    return;
+  }
+
+  video.srcObject = null;
+  video.src = URL.createObjectURL(file);
+  video.play();
+
+  video.onplay = () => {
+    processVideo();
+  };
+};
+
+async function processVideo() {
+  while (!video.paused && !video.ended) {
+    await pose.send({ image: video });
+    await new Promise(r => setTimeout(r, 100));
+  }
+}
+
+
+// 🧠 SCORE
 function calculateScore(landmarks) {
   let score = 0;
-
-  landmarks.forEach((lm) => {
-    score += lm.visibility;
-  });
-
+  landmarks.forEach(l => score += l.visibility);
   return Math.floor((score / landmarks.length) * 100);
 }
 
 
-// 🎯 RESULTS HANDLER
+// 🎯 RESULTS
 function onResults(results) {
   if (!results.poseLandmarks) return;
 
   const score = calculateScore(results.poseLandmarks);
-
   scoreText.innerText = score;
 
-  // Update graph
   dataPoints.push(score);
   if (dataPoints.length > 20) dataPoints.shift();
 
